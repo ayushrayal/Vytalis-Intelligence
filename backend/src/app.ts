@@ -1,3 +1,4 @@
+import path from 'path';
 import express, { Application } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -18,15 +19,15 @@ const app: Application = express();
 // Trust Render / Reverse Proxy
 app.set('trust proxy', 1);
 
-// Security
+// Security Middlewares
 app.use(
   helmet({
-    contentSecurityPolicy: env.NODE_ENV === 'production',
-    crossOriginEmbedderPolicy: env.NODE_ENV === 'production',
+    contentSecurityPolicy: false,
+    crossOriginEmbedderPolicy: false,
   })
 );
 
-// CORS
+// CORS Configuration
 app.use(
   cors({
     origin: env.FRONTEND_URL,
@@ -42,17 +43,11 @@ app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 app.use(cookieMiddleware);
 
-// Health Check
-app.get('/', (_req, res) => {
-  res.status(200).json({
-    success: true,
-    service: 'Vytalis Intelligence API',
-    environment: env.NODE_ENV,
-    status: 'healthy',
-  });
-});
+// Static Assets Serving (React Build in backend/public)
+const publicPath = path.resolve(process.cwd(), 'public');
+app.use(express.static(publicPath));
 
-// API Routes
+// API v1 Routes
 app.use('/api/v1', healthRoutes);
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/users', userRoutes);
@@ -60,12 +55,17 @@ app.use('/api/v1/integrations/meta', metaRoutes);
 app.use('/api/v1/meta', metaRoutes);
 app.use('/api/v1/shopify', shopifyRoutes);
 
-// 404 Handler
-app.use('*', (_req, res) => {
+// Unmatched API Route Handler (Returns 404 JSON for /api/*)
+app.all('/api/*', (_req, res) => {
   res.status(404).json({
     success: false,
-    message: 'Route not found',
+    message: 'API route not found',
   });
+});
+
+// React SPA Catch-All Handler (Serves index.html for React Router pages)
+app.get('*', (_req, res) => {
+  res.sendFile(path.join(publicPath, 'index.html'));
 });
 
 // Global Error Handler

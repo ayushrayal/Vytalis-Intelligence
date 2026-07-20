@@ -3,6 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const path_1 = __importDefault(require("path"));
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const helmet_1 = __importDefault(require("helmet"));
@@ -18,12 +19,12 @@ const shopify_routes_1 = __importDefault(require("./modules/integrations/shopify
 const app = (0, express_1.default)();
 // Trust Render / Reverse Proxy
 app.set('trust proxy', 1);
-// Security
+// Security Middlewares
 app.use((0, helmet_1.default)({
-    contentSecurityPolicy: env_config_1.env.NODE_ENV === 'production',
-    crossOriginEmbedderPolicy: env_config_1.env.NODE_ENV === 'production',
+    contentSecurityPolicy: false,
+    crossOriginEmbedderPolicy: false,
 }));
-// CORS
+// CORS Configuration
 app.use((0, cors_1.default)({
     origin: env_config_1.env.FRONTEND_URL,
     credentials: true,
@@ -35,28 +36,26 @@ app.use(rate_limit_middleware_1.globalRateLimiter);
 app.use(express_1.default.json({ limit: '1mb' }));
 app.use(express_1.default.urlencoded({ extended: true, limit: '1mb' }));
 app.use(cookie_middleware_1.cookieMiddleware);
-// Health Check
-app.get('/', (_req, res) => {
-    res.status(200).json({
-        success: true,
-        service: 'Vytalis Intelligence API',
-        environment: env_config_1.env.NODE_ENV,
-        status: 'healthy',
-    });
-});
-// API Routes
+// Static Assets Serving (React Build in backend/public)
+const publicPath = path_1.default.resolve(process.cwd(), 'public');
+app.use(express_1.default.static(publicPath));
+// API v1 Routes
 app.use('/api/v1', health_routes_1.default);
 app.use('/api/v1/auth', auth_routes_1.default);
 app.use('/api/v1/users', user_routes_1.default);
 app.use('/api/v1/integrations/meta', meta_routes_1.default);
 app.use('/api/v1/meta', meta_routes_1.default);
 app.use('/api/v1/shopify', shopify_routes_1.default);
-// 404 Handler
-app.use('*', (_req, res) => {
+// Unmatched API Route Handler (Returns 404 JSON for /api/*)
+app.all('/api/*', (_req, res) => {
     res.status(404).json({
         success: false,
-        message: 'Route not found',
+        message: 'API route not found',
     });
+});
+// React SPA Catch-All Handler (Serves index.html for React Router pages)
+app.get('*', (_req, res) => {
+    res.sendFile(path_1.default.join(publicPath, 'index.html'));
 });
 // Global Error Handler
 app.use(error_middleware_1.errorMiddleware);
