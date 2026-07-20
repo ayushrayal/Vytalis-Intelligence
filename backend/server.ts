@@ -1,5 +1,6 @@
 import dns from 'dns';
 dns.setServers(['8.8.8.8', '8.8.4.4']);
+
 import http from 'http';
 import app from './src/app';
 import { env } from './src/config/env.config';
@@ -9,53 +10,59 @@ import { connectRedis, disconnectRedis } from './src/config/redis.config';
 
 let server: http.Server;
 
-console.log("META_APP_ID:", env.META_APP_ID);
-console.log("META_REDIRECT_URI:", env.META_REDIRECT_URI);
-
-// Uncaught Exception Handler
 process.on('uncaughtException', (error: Error) => {
   logger.error('CRITICAL: Uncaught Exception detected', { error });
   process.exit(1);
 });
 
-// Unhandled Rejection Handler
 process.on('unhandledRejection', (reason: unknown) => {
-  logger.error('CRITICAL: Unhandled Promise Rejection detected', { reason });
+  logger.error('CRITICAL: Unhandled Promise Rejection detected', {
+    reason,
+  });
   process.exit(1);
 });
 
 async function bootstrap() {
   try {
-    logger.info('Starting Vytalis Intelligence Backend bootstrap sequence...');
+    logger.info(
+      'Starting Vytalis Intelligence Backend bootstrap sequence...'
+    );
 
-    // 1. Connect MongoDB
     await connectDatabase();
-
-    // 2. Connect Redis
     await connectRedis();
 
-    // 3. Start Express HTTP Server
     server = app.listen(env.PORT, () => {
-      logger.info(`🚀 Server running on port ${env.PORT} in [${env.NODE_ENV}] mode`);
-      logger.info(`API Base Endpoint: http://localhost:${env.PORT}/api/v1`);
-    });
+      const apiBaseUrl =
+        env.NODE_ENV === 'production'
+          ? `${env.BACKEND_URL}/api/v1`
+          : `http://localhost:${env.PORT}/api/v1`;
 
+      logger.info(
+        `🚀 Server running on port ${env.PORT} in [${env.NODE_ENV}] mode`
+      );
+
+      logger.info(`API Base Endpoint: ${apiBaseUrl}`);
+    });
   } catch (error) {
     logger.error('Failed to start server bootstrap sequence', { error });
     process.exit(1);
   }
 }
 
-// Graceful Shutdown Logic
 async function gracefulShutdown(signal: string) {
   logger.info(`Received ${signal}. Initiating graceful shutdown...`);
-  
+
   if (server) {
     server.close(async () => {
       logger.info('HTTP server closed.');
+
       await disconnectDatabase();
       await disconnectRedis();
-      logger.info('Vytalis Backend process terminated gracefully.');
+
+      logger.info(
+        'Vytalis Backend process terminated gracefully.'
+      );
+
       process.exit(0);
     });
   } else {

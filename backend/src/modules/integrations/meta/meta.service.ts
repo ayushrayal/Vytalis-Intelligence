@@ -199,13 +199,13 @@ export class MetaService {
   async connectMetaAccount(userId: string, code: string) {
     console.log('[META] Callback Hit');
     console.log('[META] User ID:', userId);
-    console.log('[META] OAuth Code:', code);
+    console.log('[META] OAuth Code received');
 
     const shortToken = await this.exchangeCodeForToken(code);
     const { accessToken: longToken, expiresInSeconds } = await this.exchangeForLongLivedToken(shortToken);
     const encryptedAccessToken = this.encryptMetaToken(longToken);
 
-    console.log('[META] Access Token:', longToken);
+    console.log('[META] Access Token generated successfully');
     const tokenExpiresAt = new Date(Date.now() + expiresInSeconds * 1000);
     console.log('[META] Token Expires:', tokenExpiresAt);
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
-import { apiClient } from '../../services/api.client';
+import { apiClient, API_BASE_URL } from '../../services/api.client';
 import { ShopifyDomainModal } from '../../components/ShopifyDomainModal/ShopifyDomainModal';
 import { MetaAccountModal, IMetaSimpleAccount } from '../../components/MetaAccountModal/MetaAccountModal';
 import {
@@ -133,7 +133,7 @@ export const DashboardPage: React.FC = () => {
   }, [user]);
 
   const handleConnectMeta = () => {
-    window.location.href = '/api/v1/integrations/meta/connect';
+    window.location.href = `${API_BASE_URL}/integrations/meta/connect`;
   };
 
   const handleSelectAccount = async (account: IMetaSimpleAccount) => {

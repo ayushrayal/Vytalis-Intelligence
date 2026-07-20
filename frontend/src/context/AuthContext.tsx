@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect, useCallback, ReactNode } from 'react';
-import { apiClient } from '../services/api.client';
+import { apiClient, API_BASE_URL } from '../services/api.client';
 
 export interface User {
   id: string;
@@ -101,7 +101,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }, [checkAuth]);
 
   const login = useCallback(() => {
-    window.location.href = '/api/v1/auth/google';
+    window.location.href = `${API_BASE_URL}/auth/google`;
   }, []);
 
   const logout = useCallback(async () => {

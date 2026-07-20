@@ -13,6 +13,9 @@ import shopifyRoutes from './modules/integrations/shopify/shopify.routes';
 
 const app: Application = express();
 
+// Trust reverse proxy (Render / Heroku / Cloudflare) for HTTPS cookie resolution
+app.set('trust proxy', 1);
+
 // Security Middlewares
 app.use(
   helmet({

@@ -9,6 +9,7 @@ const envSchema = z.object({
   PORT: z.string().default('5000').transform((val) => parseInt(val, 10)),
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   FRONTEND_URL: z.string().url().default('http://localhost:5173'),
+  BACKEND_URL: z.string().url().default('http://localhost:5000'),
 
   MONGODB_URI: z.string().default('mongodb://localhost:27017/vytalis_db'),
   REDIS_URL: z.string().default('redis://localhost:6379'),
