@@ -2,35 +2,103 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { apiClient } from '../../services/api.client';
 import { ShopifyDomainModal } from '../../components/ShopifyDomainModal/ShopifyDomainModal';
-import { Zap, LogOut, CheckCircle2, AlertCircle, RefreshCw } from 'lucide-react';
+import { MetaAccountModal, IMetaSimpleAccount } from '../../components/MetaAccountModal/MetaAccountModal';
+import {
+  Zap,
+  LogOut,
+  CheckCircle2,
+  AlertCircle,
+  RefreshCw,
+  Clock,
+  Layers,
+  DollarSign,
+  Users,
+  Eye,
+  Activity,
+  MousePointer,
+  Percent,
+  ShoppingBag,
+  TrendingUp,
+  Award,
+} from 'lucide-react';
 import './DashboardPage.scss';
+
+interface MetaStatus {
+  connected: boolean;
+  adAccountId?: string;
+  adAccountName?: string;
+  connectedAt?: string;
+  lastSyncedAt?: string;
+  tokenExpiresAt?: string;
+  isExpired?: boolean;
+  hasToken?: boolean;
+}
+
+interface MetaInsights {
+  spend: number;
+  reach: number;
+  impressions: number;
+  frequency: number;
+  clicks: number;
+  ctr: number;
+  purchases: number;
+  revenue: number;
+  roas: number;
+  cached?: boolean;
+}
 
 export const DashboardPage: React.FC = () => {
   const { user, logout, checkAuth } = useAuth();
   const [isShopifyModalOpen, setIsShopifyModalOpen] = useState<boolean>(false);
-  const [metaStatus, setMetaStatus] = useState<{ connected: boolean; adAccounts: number }>({
+  const [isAccountModalOpen, setIsAccountModalOpen] = useState<boolean>(false);
+  const [loadingAccounts, setLoadingAccounts] = useState<boolean>(false);
+  const [metaAccounts, setMetaAccounts] = useState<IMetaSimpleAccount[]>([]);
+
+  const [metaStatus, setMetaStatus] = useState<MetaStatus>({
     connected: false,
-    adAccounts: 0,
   });
+  const [metaInsights, setMetaInsights] = useState<MetaInsights | null>(null);
+  const [insightsLoading, setInsightsLoading] = useState<boolean>(false);
+
   const [shopifyStatus, setShopifyStatus] = useState<{ connected: boolean; shopDomain: string }>({
     connected: false,
     shopDomain: '',
   });
 
+  const fetchMetaInsights = async () => {
+    setInsightsLoading(true);
+    try {
+      const res = await apiClient.get<{ success: boolean; data: MetaInsights }>('/integrations/meta/insights');
+      setMetaInsights(res.data.data);
+    } catch {
+      setMetaInsights(null);
+    } finally {
+      setInsightsLoading(false);
+    }
+  };
+
   const fetchStatuses = async () => {
     try {
       const [metaRes, shopifyRes] = await Promise.all([
-        apiClient.get<{ connected: boolean; adAccounts: number }>('/meta/status'),
+        apiClient.get<{ success: boolean; data: MetaStatus }>('/integrations/meta/status'),
         apiClient.get<{ connected: boolean; shopDomain: string }>('/shopify/status'),
       ]);
-      setMetaStatus(metaRes.data);
+
+      const statusData = metaRes.data.data;
+      console.log('[Dashboard] Meta Status:', metaRes.data);
+      setMetaStatus(statusData);
       setShopifyStatus(shopifyRes.data);
+
+      if (statusData.connected) {
+        fetchMetaInsights();
+      }
     } catch {
-      // Fallback to user context values
       if (user) {
         setMetaStatus({
           connected: !!user.meta?.connected,
-          adAccounts: user.meta?.adAccounts?.length || 0,
+          adAccountId: user.meta?.adAccountId,
+          adAccountName: user.meta?.adAccountName,
+          lastSyncedAt: user.meta?.lastSyncedAt?.toString(),
         });
         setShopifyStatus({
           connected: !!user.shopify?.connected,
@@ -40,17 +108,74 @@ export const DashboardPage: React.FC = () => {
     }
   };
 
+  const openAccountSelector = async () => {
+    setIsAccountModalOpen(true);
+    setLoadingAccounts(true);
+    try {
+      const res = await apiClient.get<{ success: boolean; data: IMetaSimpleAccount[] }>('/integrations/meta/accounts');
+      setMetaAccounts(res.data.data || []);
+    } catch (err: any) {
+      alert(err?.response?.data?.message || 'Failed to fetch Meta Ad Accounts');
+      setIsAccountModalOpen(false);
+    } finally {
+      setLoadingAccounts(false);
+    }
+  };
+
   useEffect(() => {
     fetchStatuses();
+
+    // Check if coming back from Meta OAuth redirect
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('meta') === 'oauth_complete') {
+      openAccountSelector();
+    }
   }, [user]);
 
   const handleConnectMeta = () => {
-    window.location.href = '/api/v1/meta/connect';
+    window.location.href = '/api/v1/integrations/meta/connect';
+  };
+
+  const handleSelectAccount = async (account: IMetaSimpleAccount) => {
+    try {
+      await apiClient.post('/integrations/meta/select-account', {
+        adAccountId: account.id,
+        adAccountName: account.name,
+      });
+      setIsAccountModalOpen(false);
+      await fetchStatuses();
+    } catch (err: any) {
+      alert(err?.response?.data?.message || 'Failed to select Ad Account');
+    }
   };
 
   const handleConnectShopify = (domain: string) => {
     setIsShopifyModalOpen(false);
     window.location.href = `/api/v1/shopify/connect?shop=${encodeURIComponent(domain)}`;
+  };
+
+  const formatCurrency = (val: number) => {
+    return new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+      maximumFractionDigits: 0,
+    }).format(val);
+  };
+
+  const formatNumber = (val: number) => {
+    return new Intl.NumberFormat('en-US').format(val);
+  };
+
+  const getTimeAgo = (dateStr?: string) => {
+    if (!dateStr) return 'Just now';
+    const diffMs = Date.now() - new Date(dateStr).getTime();
+    const mins = Math.floor(diffMs / 60000);
+    if (mins < 1) return 'Just now';
+    if (mins === 1) return '1 minute ago';
+    if (mins < 60) return `${mins} minutes ago`;
+    const hours = Math.floor(mins / 60);
+    if (hours === 1) return '1 hour ago';
+    return `${hours} hours ago`;
   };
 
   return (
@@ -80,7 +205,7 @@ export const DashboardPage: React.FC = () => {
       <main className="dashboard-body">
         <div className="welcome-banner">
           <div className="banner-left">
-            <h2>Phase 3: Connection Status Matrix</h2>
+            <h2>Phase 3: Meta Marketing Intelligence</h2>
             <p>
               Account: <strong>{user?.email}</strong> • Plan: <span className="plan-badge">{user?.subscription?.plan?.toUpperCase()}</span>
             </p>
@@ -108,6 +233,16 @@ export const DashboardPage: React.FC = () => {
                     <CheckCircle2 size={14} className="status-icon connected" />
                     <span>Connected</span>
                   </>
+                ) : metaStatus.isExpired ? (
+                  <>
+                    <AlertCircle size={14} className="status-icon disconnected" />
+                    <span>Session Expired</span>
+                  </>
+                ) : metaStatus.hasToken && !metaStatus.adAccountId ? (
+                  <>
+                    <Layers size={14} className="status-icon connected" />
+                    <span>Select Account</span>
+                  </>
                 ) : (
                   <>
                     <AlertCircle size={14} className="status-icon disconnected" />
@@ -120,29 +255,48 @@ export const DashboardPage: React.FC = () => {
             <div className="card-main">
               <h3>Meta Ads</h3>
               <p className="description">
-                OAuth 2.0 Integration with AES-256 encrypted long-lived tokens for Meta Marketing API.
+                OAuth 2.0 Integration with AES-256 encrypted access tokens for Meta Marketing API.
               </p>
 
               <div className="connection-details">
                 <div className="detail-row">
                   <span className="label">Status:</span>
-                  <span className="value">{metaStatus.connected ? 'Connected' : 'Not Connected'}</span>
+                  <span className="value">
+                    {metaStatus.connected ? 'Connected' : metaStatus.isExpired ? 'Session Expired' : 'Not Connected'}
+                  </span>
                 </div>
-                <div className="detail-row">
-                  <span className="label">Ad Accounts:</span>
-                  <span className="value highlight">{metaStatus.adAccounts}</span>
-                </div>
+                {metaStatus.adAccountName && (
+                  <div className="detail-row">
+                    <span className="label">Account:</span>
+                    <span className="value highlight">{metaStatus.adAccountName}</span>
+                  </div>
+                )}
+                {metaStatus.connected && (
+                  <div className="detail-row">
+                    <span className="label">Last Synced:</span>
+                    <span className="value flex-row">
+                      <Clock size={12} style={{ marginRight: 4 }} />
+                      {getTimeAgo(metaStatus.lastSyncedAt)}
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
 
             <div className="card-actions">
-              <button
-                onClick={handleConnectMeta}
-                className="connect-btn meta"
-                id="connect-meta-btn"
-              >
-                {metaStatus.connected ? 'Reconnect Meta' : 'Connect Meta'}
-              </button>
+              {metaStatus.isExpired ? (
+                <button onClick={handleConnectMeta} className="connect-btn meta" id="reconnect-meta-btn">
+                  Reconnect Meta
+                </button>
+              ) : metaStatus.hasToken && !metaStatus.adAccountId ? (
+                <button onClick={openAccountSelector} className="connect-btn meta" id="select-meta-account-btn">
+                  Select Ad Account
+                </button>
+              ) : (
+                <button onClick={handleConnectMeta} className="connect-btn meta" id="connect-meta-btn">
+                  {metaStatus.connected ? 'Reconnect Meta' : 'Connect Meta'}
+                </button>
+              )}
             </div>
           </div>
 
@@ -189,17 +343,142 @@ export const DashboardPage: React.FC = () => {
             </div>
 
             <div className="card-actions">
-              <button
-                onClick={() => setIsShopifyModalOpen(true)}
-                className="connect-btn shopify"
-                id="connect-shopify-btn"
-              >
+              <button onClick={() => setIsShopifyModalOpen(true)} className="connect-btn shopify" id="connect-shopify-btn">
                 {shopifyStatus.connected ? 'Reconnect Shopify' : 'Connect Shopify'}
               </button>
             </div>
           </div>
         </div>
+
+        {/* 7-DAY METRICS SECTION WHEN CONNECTED */}
+        {metaStatus.connected && metaInsights && (
+          <section className="metrics-section">
+            <div className="metrics-header">
+              <div className="header-title">
+                <TrendingUp className="icon" />
+                <h3>7-Day Performance Analytics</h3>
+              </div>
+              {metaInsights.cached && <span className="cache-badge">⚡ Cached (15m)</span>}
+            </div>
+
+            {insightsLoading ? (
+              <div className="metrics-loading">
+                <div className="spinner"></div>
+                <span>Fetching latest Meta Insights...</span>
+              </div>
+            ) : (
+              <div className="metrics-grid">
+                {/* SPEND */}
+                <div className="metric-card">
+                  <div className="metric-icon-box spend">
+                    <DollarSign size={20} />
+                  </div>
+                  <div className="metric-content">
+                    <span className="metric-label">Spend</span>
+                    <span className="metric-value">{formatCurrency(metaInsights.spend)}</span>
+                  </div>
+                </div>
+
+                {/* REACH */}
+                <div className="metric-card">
+                  <div className="metric-icon-box reach">
+                    <Users size={20} />
+                  </div>
+                  <div className="metric-content">
+                    <span className="metric-label">Reach</span>
+                    <span className="metric-value">{formatNumber(metaInsights.reach)}</span>
+                  </div>
+                </div>
+
+                {/* IMPRESSIONS */}
+                <div className="metric-card">
+                  <div className="metric-icon-box impressions">
+                    <Eye size={20} />
+                  </div>
+                  <div className="metric-content">
+                    <span className="metric-label">Impressions</span>
+                    <span className="metric-value">{formatNumber(metaInsights.impressions)}</span>
+                  </div>
+                </div>
+
+                {/* FREQUENCY */}
+                <div className="metric-card">
+                  <div className="metric-icon-box frequency">
+                    <Activity size={20} />
+                  </div>
+                  <div className="metric-content">
+                    <span className="metric-label">Frequency</span>
+                    <span className="metric-value">{metaInsights.frequency}</span>
+                  </div>
+                </div>
+
+                {/* CLICKS */}
+                <div className="metric-card">
+                  <div className="metric-icon-box clicks">
+                    <MousePointer size={20} />
+                  </div>
+                  <div className="metric-content">
+                    <span className="metric-label">Clicks</span>
+                    <span className="metric-value">{formatNumber(metaInsights.clicks)}</span>
+                  </div>
+                </div>
+
+                {/* CTR */}
+                <div className="metric-card">
+                  <div className="metric-icon-box ctr">
+                    <Percent size={20} />
+                  </div>
+                  <div className="metric-content">
+                    <span className="metric-label">CTR</span>
+                    <span className="metric-value">{metaInsights.ctr}%</span>
+                  </div>
+                </div>
+
+                {/* PURCHASES */}
+                <div className="metric-card">
+                  <div className="metric-icon-box purchases">
+                    <ShoppingBag size={20} />
+                  </div>
+                  <div className="metric-content">
+                    <span className="metric-label">Purchases</span>
+                    <span className="metric-value">{formatNumber(metaInsights.purchases)}</span>
+                  </div>
+                </div>
+
+                {/* REVENUE */}
+                <div className="metric-card">
+                  <div className="metric-icon-box revenue">
+                    <TrendingUp size={20} />
+                  </div>
+                  <div className="metric-content">
+                    <span className="metric-label">Revenue</span>
+                    <span className="metric-value">{formatCurrency(metaInsights.revenue)}</span>
+                  </div>
+                </div>
+
+                {/* ROAS */}
+                <div className="metric-card highlight">
+                  <div className="metric-icon-box roas">
+                    <Award size={20} />
+                  </div>
+                  <div className="metric-content">
+                    <span className="metric-label">ROAS</span>
+                    <span className="metric-value">{metaInsights.roas}x</span>
+                  </div>
+                </div>
+              </div>
+            )}
+          </section>
+        )}
       </main>
+
+      <MetaAccountModal
+        isOpen={isAccountModalOpen}
+        accounts={metaAccounts}
+        loading={loadingAccounts}
+        onClose={() => setIsAccountModalOpen(false)}
+        onSelectAccount={handleSelectAccount}
+      />
 
       <ShopifyDomainModal
         isOpen={isShopifyModalOpen}

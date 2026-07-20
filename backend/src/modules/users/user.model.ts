@@ -34,7 +34,11 @@ export interface IUser extends Document {
   meta?: {
     connected: boolean;
     encryptedAccessToken?: string;
+    adAccountId?: string;
+    adAccountName?: string;
     userId?: string;
+    connectedAt?: Date;
+    tokenExpiresAt?: Date;
     lastSyncedAt?: Date;
     adAccounts?: IMetaAdAccount[];
   };
@@ -140,9 +144,23 @@ const userSchema = new Schema<IUser>(
         type: String,
         default: '',
       },
+      adAccountId: {
+        type: String,
+        default: '',
+      },
+      adAccountName: {
+        type: String,
+        default: '',
+      },
       userId: {
         type: String,
         default: '',
+      },
+      connectedAt: {
+        type: Date,
+      },
+      tokenExpiresAt: {
+        type: Date,
       },
       lastSyncedAt: {
         type: Date,

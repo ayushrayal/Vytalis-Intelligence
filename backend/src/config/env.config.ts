@@ -23,7 +23,7 @@ const envSchema = z.object({
 
   META_APP_ID: z.string().default('mock_meta_app_id'),
   META_APP_SECRET: z.string().default('mock_meta_app_secret'),
-  META_REDIRECT_URI: z.string().default('http://localhost:5000/api/v1/meta/callback'),
+  META_REDIRECT_URI: z.string().default('http://localhost:5000/api/v1/integrations/meta/callback'),
 
   SHOPIFY_CLIENT_ID: z.string().default('mock_shopify_client_id'),
   SHOPIFY_CLIENT_SECRET: z.string().default('mock_shopify_client_secret'),

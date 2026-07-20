@@ -39,6 +39,7 @@ app.use(cookieMiddleware);
 app.use('/api/v1', healthRoutes);
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/users', userRoutes);
+app.use('/api/v1/integrations/meta', metaRoutes);
 app.use('/api/v1/meta', metaRoutes);
 app.use('/api/v1/shopify', shopifyRoutes);
 

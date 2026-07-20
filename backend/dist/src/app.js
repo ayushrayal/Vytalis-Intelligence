@@ -35,6 +35,7 @@ app.use(cookie_middleware_1.cookieMiddleware);
 app.use('/api/v1', health_routes_1.default);
 app.use('/api/v1/auth', auth_routes_1.default);
 app.use('/api/v1/users', user_routes_1.default);
+app.use('/api/v1/integrations/meta', meta_routes_1.default);
 app.use('/api/v1/meta', meta_routes_1.default);
 app.use('/api/v1/shopify', shopify_routes_1.default);
 // Global Error Handler

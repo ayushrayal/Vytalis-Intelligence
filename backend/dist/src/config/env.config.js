@@ -23,7 +23,7 @@ const envSchema = zod_1.z.object({
     GOOGLE_REDIRECT_URI: zod_1.z.string().default('http://localhost:5000/api/v1/auth/google/callback'),
     META_APP_ID: zod_1.z.string().default('mock_meta_app_id'),
     META_APP_SECRET: zod_1.z.string().default('mock_meta_app_secret'),
-    META_REDIRECT_URI: zod_1.z.string().default('http://localhost:5000/api/v1/meta/callback'),
+    META_REDIRECT_URI: zod_1.z.string().default('http://localhost:5000/api/v1/integrations/meta/callback'),
     SHOPIFY_CLIENT_ID: zod_1.z.string().default('mock_shopify_client_id'),
     SHOPIFY_CLIENT_SECRET: zod_1.z.string().default('mock_shopify_client_secret'),
     SHOPIFY_SCOPES: zod_1.z.string().default('read_products,read_orders,read_customers'),

@@ -11,6 +11,8 @@ const logger_config_1 = require("./src/config/logger.config");
 const database_config_1 = require("./src/config/database.config");
 const redis_config_1 = require("./src/config/redis.config");
 let server;
+console.log("META_APP_ID:", env_config_1.env.META_APP_ID);
+console.log("META_REDIRECT_URI:", env_config_1.env.META_REDIRECT_URI);
 // Uncaught Exception Handler
 process.on('uncaughtException', (error) => {
     logger_config_1.logger.error('CRITICAL: Uncaught Exception detected', { error });

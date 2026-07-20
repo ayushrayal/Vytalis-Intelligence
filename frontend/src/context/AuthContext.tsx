@@ -24,6 +24,10 @@ export interface User {
   meta?: {
     connected: boolean;
     userId?: string;
+    adAccountId?: string;
+    adAccountName?: string;
+    connectedAt?: string;
+    tokenExpiresAt?: string;
     lastSyncedAt?: string;
     adAccounts?: Array<{
       id: string;
