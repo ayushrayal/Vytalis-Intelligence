@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "module": "CommonJS",
-    "moduleResolution": "node",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "lib": ["ES2022"],
     "outDir": "./dist",
     "rootDir": ".",
@@ -23,14 +23,7 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "baseUrl": ".",
-    "paths": {
-      "@config/*": ["src/config/*"],
-      "@middleware/*": ["src/middleware/*"],
-      "@shared/*": ["src/shared/*"],
-      "@modules/*": ["src/modules/*"]
-    }
+    "forceConsistentCasingInFileNames": true
   },
   "include": ["server.ts", "src/**/*"],
   "exclude": ["node_modules", "dist"]
