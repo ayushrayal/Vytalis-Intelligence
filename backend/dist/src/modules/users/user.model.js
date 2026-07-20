@@ -123,7 +123,7 @@ const userSchema = new mongoose_1.Schema({
             type: Boolean,
             default: false,
         },
-        encryptedAccessToken: {
+        shopId: {
             type: String,
             default: '',
         },
@@ -134,6 +134,17 @@ const userSchema = new mongoose_1.Schema({
         shopName: {
             type: String,
             default: '',
+        },
+        currency: {
+            type: String,
+            default: 'INR',
+        },
+        encryptedAccessToken: {
+            type: String,
+            default: '',
+        },
+        connectedAt: {
+            type: Date,
         },
         lastSyncedAt: {
             type: Date,

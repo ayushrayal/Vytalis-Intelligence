@@ -99,4 +99,67 @@ export const validateAndConsumeMetaOAuthState = async (nonce: string): Promise<s
   }
 };
 
+export const SHOPIFY_OAUTH_STATE_TTL_SECONDS = 300; // 5 Minutes
+
+export const storeShopifyOAuthState = async (nonce: string, userId: string): Promise<void> => {
+  try {
+    const client = getRedisClient();
+    const key = `oauth:shopify:${nonce}`;
+    await client.set(key, JSON.stringify({ userId }), 'EX', SHOPIFY_OAUTH_STATE_TTL_SECONDS);
+  } catch (error) {
+    logger.error(`Failed to store Shopify OAuth state in Redis for nonce ${nonce}`, { error });
+  }
+};
+
+export const validateAndConsumeShopifyOAuthState = async (nonce: string): Promise<string | null> => {
+  try {
+    const client = getRedisClient();
+    const key = `oauth:shopify:${nonce}`;
+    const data = await client.get(key);
+    if (!data) return null;
+    await client.del(key);
+    const parsed = JSON.parse(data);
+    return parsed.userId || null;
+  } catch (error) {
+    logger.error(`Failed to validate Shopify OAuth state in Redis for nonce ${nonce}`, { error });
+    return null;
+  }
+};
+
+export const SHOPIFY_METRICS_CACHE_TTL_SECONDS = 900; // 15 Minutes
+
+export const storeShopifyMetricsCache = async (userId: string, data: any): Promise<void> => {
+  try {
+    const client = getRedisClient();
+    const key = `shopify:metrics:${userId}`;
+    await client.set(key, JSON.stringify(data), 'EX', SHOPIFY_METRICS_CACHE_TTL_SECONDS);
+  } catch (error) {
+    logger.error(`Failed to store Shopify metrics in Redis cache for user ${userId}`, { error });
+  }
+};
+
+export const getShopifyMetricsCache = async (userId: string): Promise<any | null> => {
+  try {
+    const client = getRedisClient();
+    const key = `shopify:metrics:${userId}`;
+    const data = await client.get(key);
+    if (!data) return null;
+    return JSON.parse(data);
+  } catch (error) {
+    logger.error(`Failed to retrieve Shopify metrics from Redis cache for user ${userId}`, { error });
+    return null;
+  }
+};
+
+export const clearShopifyMetricsCache = async (userId: string): Promise<void> => {
+  try {
+    const client = getRedisClient();
+    const key = `shopify:metrics:${userId}`;
+    await client.del(key);
+  } catch (error) {
+    logger.error(`Failed to clear Shopify metrics cache from Redis for user ${userId}`, { error });
+  }
+};
+
+
 

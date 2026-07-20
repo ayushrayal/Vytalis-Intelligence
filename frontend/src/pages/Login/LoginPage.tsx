@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { ShieldCheck, Sparkles, Zap, ArrowRight } from 'lucide-react';
-import './LoginPage.scss';
 
 export const LoginPage: React.FC = () => {
   const { user, isAuthenticated, login, isLoading } = useAuth();
@@ -19,33 +18,36 @@ export const LoginPage: React.FC = () => {
   }, [isAuthenticated, user, navigate]);
 
   return (
-    <div className="login-container">
-      <div className="login-backdrop" />
-      <div className="login-card">
-        <div className="brand-header">
-          <div className="logo-badge">
-            <Zap className="logo-icon" />
+    <div className="min-h-screen flex items-center justify-center bg-black text-white relative overflow-hidden px-4">
+      {/* Glow Backdrops */}
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-indigo-600/20 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-1/4 left-1/2 -translate-x-1/2 translate-y-1/2 w-96 h-96 bg-purple-600/20 rounded-full blur-3xl pointer-events-none" />
+
+      <div className="w-full max-w-md bg-slate-900/80 border border-slate-800 rounded-3xl p-8 backdrop-blur-2xl shadow-2xl relative z-10 text-center">
+        <div className="flex flex-col items-center mb-8">
+          <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-500 flex items-center justify-center shadow-lg shadow-indigo-500/30 mb-4">
+            <Zap className="w-7 h-7 text-white" />
           </div>
-          <h1 className="brand-title">Vytalis Intelligence</h1>
-          <p className="brand-subtitle">AI-Powered Enterprise Ad & Revenue Intelligence</p>
+          <h1 className="text-2xl font-extrabold text-white tracking-tight">Vytalis Intelligence</h1>
+          <p className="text-xs text-slate-400 mt-1 font-medium">AI-Powered Enterprise Ad & Revenue Intelligence</p>
         </div>
 
         {errorParam && (
-          <div className="error-banner">
+          <div className="mb-6 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-medium">
             <span>Authentication error: {errorParam.replace(/_/g, ' ')}</span>
           </div>
         )}
 
-        <div className="auth-action-box">
-          <p className="auth-instructions">Sign in or create an account to access your intelligence matrix.</p>
+        <div className="space-y-4">
+          <p className="text-xs text-slate-400 leading-relaxed">Sign in or create an account to access your intelligence matrix.</p>
 
           <button
             onClick={login}
             disabled={isLoading}
-            className="google-btn"
+            className="w-full py-3.5 px-4 rounded-xl bg-white hover:bg-slate-100 text-slate-900 font-semibold text-sm transition-all shadow-lg shadow-white/10 flex items-center justify-center gap-3 cursor-pointer group disabled:opacity-50"
             id="google-oauth-login-btn"
           >
-            <svg className="google-icon" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24">
               <path
                 fill="#4285F4"
                 d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -64,18 +66,18 @@ export const LoginPage: React.FC = () => {
               />
             </svg>
             <span>Continue with Google</span>
-            <ArrowRight className="arrow-icon" />
+            <ArrowRight className="w-4 h-4 text-slate-400 group-hover:translate-x-0.5 transition-transform" />
           </button>
         </div>
 
-        <div className="security-badges">
-          <div className="badge-item">
-            <ShieldCheck className="badge-icon" />
-            <span>256-bit Encrypted Session</span>
+        <div className="mt-8 pt-6 border-t border-slate-800/80 grid grid-cols-2 gap-2 text-[11px] text-slate-400">
+          <div className="flex items-center justify-center gap-1.5">
+            <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+            <span>256-bit SSL</span>
           </div>
-          <div className="badge-item">
-            <Sparkles className="badge-icon" />
-            <span>Google OAuth 2.0 Only</span>
+          <div className="flex items-center justify-center gap-1.5">
+            <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
+            <span>Google OAuth 2.0</span>
           </div>
         </div>
       </div>

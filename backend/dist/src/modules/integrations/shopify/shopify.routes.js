@@ -8,4 +8,7 @@ router.get('/connect', auth_middleware_1.requireAuth, shopify_controller_1.conne
 router.get('/callback', shopify_controller_1.shopifyCallback);
 router.get('/status', auth_middleware_1.requireAuth, shopify_controller_1.getShopifyStatus);
 router.get('/store', auth_middleware_1.requireAuth, shopify_controller_1.getShopDetails);
+router.get('/orders', auth_middleware_1.requireAuth, shopify_controller_1.getShopifyOrders);
+router.get('/products', auth_middleware_1.requireAuth, shopify_controller_1.getShopifyProducts);
+router.post('/disconnect', auth_middleware_1.requireAuth, shopify_controller_1.disconnectShopify);
 exports.default = router;

@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.validateAndConsumeMetaOAuthState = exports.storeMetaOAuthState = exports.META_OAUTH_STATE_TTL_SECONDS = exports.getMetaInsightsCache = exports.storeMetaInsightsCache = exports.META_INSIGHTS_CACHE_TTL_SECONDS = exports.deleteRefreshToken = exports.getRefreshTokenHash = exports.storeRefreshTokenHash = exports.hashToken = void 0;
+exports.clearShopifyMetricsCache = exports.getShopifyMetricsCache = exports.storeShopifyMetricsCache = exports.SHOPIFY_METRICS_CACHE_TTL_SECONDS = exports.validateAndConsumeShopifyOAuthState = exports.storeShopifyOAuthState = exports.SHOPIFY_OAUTH_STATE_TTL_SECONDS = exports.validateAndConsumeMetaOAuthState = exports.storeMetaOAuthState = exports.META_OAUTH_STATE_TTL_SECONDS = exports.getMetaInsightsCache = exports.storeMetaInsightsCache = exports.META_INSIGHTS_CACHE_TTL_SECONDS = exports.deleteRefreshToken = exports.getRefreshTokenHash = exports.storeRefreshTokenHash = exports.hashToken = void 0;
 const crypto_1 = __importDefault(require("crypto"));
 const redis_config_1 = require("../../config/redis.config");
 const logger_config_1 = require("../../config/logger.config");
@@ -108,3 +108,70 @@ const validateAndConsumeMetaOAuthState = async (nonce) => {
     }
 };
 exports.validateAndConsumeMetaOAuthState = validateAndConsumeMetaOAuthState;
+exports.SHOPIFY_OAUTH_STATE_TTL_SECONDS = 300; // 5 Minutes
+const storeShopifyOAuthState = async (nonce, userId) => {
+    try {
+        const client = (0, redis_config_1.getRedisClient)();
+        const key = `oauth:shopify:${nonce}`;
+        await client.set(key, JSON.stringify({ userId }), 'EX', exports.SHOPIFY_OAUTH_STATE_TTL_SECONDS);
+    }
+    catch (error) {
+        logger_config_1.logger.error(`Failed to store Shopify OAuth state in Redis for nonce ${nonce}`, { error });
+    }
+};
+exports.storeShopifyOAuthState = storeShopifyOAuthState;
+const validateAndConsumeShopifyOAuthState = async (nonce) => {
+    try {
+        const client = (0, redis_config_1.getRedisClient)();
+        const key = `oauth:shopify:${nonce}`;
+        const data = await client.get(key);
+        if (!data)
+            return null;
+        await client.del(key);
+        const parsed = JSON.parse(data);
+        return parsed.userId || null;
+    }
+    catch (error) {
+        logger_config_1.logger.error(`Failed to validate Shopify OAuth state in Redis for nonce ${nonce}`, { error });
+        return null;
+    }
+};
+exports.validateAndConsumeShopifyOAuthState = validateAndConsumeShopifyOAuthState;
+exports.SHOPIFY_METRICS_CACHE_TTL_SECONDS = 900; // 15 Minutes
+const storeShopifyMetricsCache = async (userId, data) => {
+    try {
+        const client = (0, redis_config_1.getRedisClient)();
+        const key = `shopify:metrics:${userId}`;
+        await client.set(key, JSON.stringify(data), 'EX', exports.SHOPIFY_METRICS_CACHE_TTL_SECONDS);
+    }
+    catch (error) {
+        logger_config_1.logger.error(`Failed to store Shopify metrics in Redis cache for user ${userId}`, { error });
+    }
+};
+exports.storeShopifyMetricsCache = storeShopifyMetricsCache;
+const getShopifyMetricsCache = async (userId) => {
+    try {
+        const client = (0, redis_config_1.getRedisClient)();
+        const key = `shopify:metrics:${userId}`;
+        const data = await client.get(key);
+        if (!data)
+            return null;
+        return JSON.parse(data);
+    }
+    catch (error) {
+        logger_config_1.logger.error(`Failed to retrieve Shopify metrics from Redis cache for user ${userId}`, { error });
+        return null;
+    }
+};
+exports.getShopifyMetricsCache = getShopifyMetricsCache;
+const clearShopifyMetricsCache = async (userId) => {
+    try {
+        const client = (0, redis_config_1.getRedisClient)();
+        const key = `shopify:metrics:${userId}`;
+        await client.del(key);
+    }
+    catch (error) {
+        logger_config_1.logger.error(`Failed to clear Shopify metrics cache from Redis for user ${userId}`, { error });
+    }
+};
+exports.clearShopifyMetricsCache = clearShopifyMetricsCache;

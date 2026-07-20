@@ -2,7 +2,6 @@ import React from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { PricingPage } from '../Pricing/PricingPage';
 import { CheckCircle2, Circle } from 'lucide-react';
-import './WelcomePage.scss';
 
 export const WelcomePage: React.FC = () => {
   const { user, logout } = useAuth();

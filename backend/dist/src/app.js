@@ -45,6 +45,7 @@ app.use('/api/v1/auth', auth_routes_1.default);
 app.use('/api/v1/users', user_routes_1.default);
 app.use('/api/v1/integrations/meta', meta_routes_1.default);
 app.use('/api/v1/meta', meta_routes_1.default);
+app.use('/api/v1/integrations/shopify', shopify_routes_1.default);
 app.use('/api/v1/shopify', shopify_routes_1.default);
 // Unmatched API Route Handler (Returns 404 JSON for /api/*)
 app.all('/api/*', (_req, res) => {

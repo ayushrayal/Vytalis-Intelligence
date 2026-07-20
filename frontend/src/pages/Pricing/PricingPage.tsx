@@ -13,7 +13,6 @@ import {
   Star,
   Bot,
 } from 'lucide-react';
-import './PricingPage.scss';
 
 interface PricingPlanItem {
   id: 'starter' | 'growth' | 'agency';

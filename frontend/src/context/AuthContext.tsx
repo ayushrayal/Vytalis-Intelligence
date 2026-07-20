@@ -38,8 +38,11 @@ export interface User {
   };
   shopify?: {
     connected: boolean;
+    shopId?: string;
     shopDomain?: string;
     shopName?: string;
+    currency?: string;
+    connectedAt?: string;
     lastSyncedAt?: string;
   };
   preferences: {

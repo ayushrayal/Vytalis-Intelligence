@@ -44,9 +44,12 @@ export interface IUser extends Document {
   };
   shopify?: {
     connected: boolean;
-    encryptedAccessToken?: string;
+    shopId?: string;
     shopDomain?: string;
     shopName?: string;
+    currency?: string;
+    encryptedAccessToken?: string;
+    connectedAt?: Date;
     lastSyncedAt?: Date;
   };
   preferences: {
@@ -179,7 +182,7 @@ const userSchema = new Schema<IUser>(
         type: Boolean,
         default: false,
       },
-      encryptedAccessToken: {
+      shopId: {
         type: String,
         default: '',
       },
@@ -190,6 +193,17 @@ const userSchema = new Schema<IUser>(
       shopName: {
         type: String,
         default: '',
+      },
+      currency: {
+        type: String,
+        default: 'INR',
+      },
+      encryptedAccessToken: {
+        type: String,
+        default: '',
+      },
+      connectedAt: {
+        type: Date,
       },
       lastSyncedAt: {
         type: Date,
