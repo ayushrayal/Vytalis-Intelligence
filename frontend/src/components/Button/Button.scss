@@ -1,0 +1,57 @@
+.vytalis-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-family: inherit;
+  font-weight: 600;
+  border-radius: 8px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  outline: none;
+  cursor: pointer;
+
+  &--primary {
+    background: linear-gradient(135deg, #064E3B 0%, #047857 100%);
+    color: #F8E7C9;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    box-shadow: 0 4px 14px rgba(6, 78, 59, 0.4);
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(6, 78, 59, 0.6);
+      background: linear-gradient(135deg, #047857 0%, #059669 100%);
+    }
+  }
+
+  &--secondary {
+    background: rgba(16, 22, 26, 0.8);
+    color: #F8E7C9;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+  }
+
+  &--sm {
+    padding: 0.4rem 0.85rem;
+    font-size: 0.85rem;
+  }
+
+  &--md {
+    padding: 0.65rem 1.25rem;
+    font-size: 0.95rem;
+  }
+
+  &--lg {
+    padding: 0.85rem 1.75rem;
+    font-size: 1.05rem;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none !important;
+  }
+}

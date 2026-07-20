@@ -1,0 +1,142 @@
+.welcome-hub-container {
+  min-height: 100vh;
+  background-color: #090d16;
+  color: #ffffff;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+
+  .onboarding-banner {
+    background: rgba(15, 23, 42, 0.85);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(16px);
+    padding: 1.5rem 2rem 1.25rem;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+
+    .banner-content {
+      max-width: 1240px;
+      margin: 0 auto 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      .user-badge {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+
+        .user-avatar {
+          width: 44px;
+          height: 44px;
+          border-radius: 50%;
+          object-fit: cover;
+          border: 2px solid #6366f1;
+        }
+
+        .user-avatar-placeholder {
+          width: 44px;
+          height: 44px;
+          border-radius: 50%;
+          background: linear-gradient(135deg, #6366f1, #a855f7);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-weight: 700;
+          font-size: 1.2rem;
+        }
+
+        .user-details {
+          .welcome-title {
+            font-size: 1.25rem;
+            font-weight: 800;
+            margin: 0 0 0.2rem 0;
+            color: #ffffff;
+          }
+
+          .user-email {
+            font-size: 0.825rem;
+            color: #94a3b8;
+            margin: 0;
+          }
+        }
+      }
+
+      .signout-button {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        color: #94a3b8;
+        padding: 0.45rem 1rem;
+        border-radius: 10px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &:hover {
+          color: #ffffff;
+          border-color: rgba(255, 255, 255, 0.3);
+          background: rgba(255, 255, 255, 0.1);
+        }
+      }
+    }
+
+    .onboarding-steps-bar {
+      max-width: 1240px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      overflow-x: auto;
+
+      .step-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.85rem;
+        font-weight: 600;
+
+        &.active {
+          color: #818cf8;
+        }
+
+        &.pending {
+          color: #64748b;
+        }
+
+        .step-icon {
+          width: 18px;
+          height: 18px;
+
+          &.active {
+            color: #6366f1;
+          }
+
+          &.pending {
+            color: #475569;
+          }
+        }
+      }
+
+      .step-divider {
+        flex: 1;
+        height: 1px;
+        background: rgba(255, 255, 255, 0.08);
+        min-width: 20px;
+      }
+    }
+  }
+
+  .onboarding-hub-main {
+    .pricing-container {
+      min-height: auto;
+      padding-top: 2rem;
+
+      .pricing-header {
+        display: none;
+      }
+    }
+  }
+}

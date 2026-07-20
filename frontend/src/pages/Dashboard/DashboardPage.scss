@@ -1,0 +1,158 @@
+.dashboard-container {
+  min-height: 100vh;
+  background-color: #090d16;
+  color: #ffffff;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+
+  .dashboard-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 2rem;
+    background: rgba(15, 23, 42, 0.8);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 1.15rem;
+
+      .icon {
+        color: #6366f1;
+      }
+    }
+
+    .user-controls {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+
+      .avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        object-fit: cover;
+      }
+
+      .user-info {
+        display: flex;
+        flex-direction: column;
+
+        .name {
+          font-size: 0.875rem;
+          font-weight: 600;
+        }
+
+        .email {
+          font-size: 0.75rem;
+          color: #94a3b8;
+        }
+      }
+
+      .logout-button {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 0.5rem 1rem;
+        background: rgba(239, 68, 68, 0.1);
+        border: 1px solid rgba(239, 68, 68, 0.2);
+        color: #f87171;
+        border-radius: 10px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &:hover {
+          background: rgba(239, 68, 68, 0.2);
+        }
+
+        .btn-icon {
+          width: 16px;
+          height: 16px;
+        }
+      }
+    }
+  }
+
+  .dashboard-body {
+    max-width: 1200px;
+    margin: 3rem auto;
+    padding: 0 1.5rem;
+
+    .welcome-banner {
+      margin-bottom: 2.5rem;
+
+      h2 {
+        font-size: 2rem;
+        font-weight: 800;
+        margin-bottom: 0.5rem;
+      }
+
+      p {
+        color: #94a3b8;
+
+        .plan-badge {
+          background: #6366f1;
+          color: #ffffff;
+          font-size: 0.75rem;
+          font-weight: 700;
+          padding: 0.2rem 0.5rem;
+          border-radius: 6px;
+          margin-left: 6px;
+        }
+      }
+    }
+
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.5rem;
+
+      .metric-card {
+        background: rgba(15, 23, 42, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 18px;
+        padding: 1.5rem;
+
+        .card-header {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          color: #94a3b8;
+          font-size: 0.875rem;
+          margin-bottom: 1rem;
+
+          .icon {
+            width: 20px;
+            height: 20px;
+
+            &.success {
+              color: #10b981;
+            }
+            &.primary {
+              color: #6366f1;
+            }
+            &.warning {
+              color: #f59e0b;
+            }
+          }
+        }
+
+        .card-value {
+          font-size: 1.25rem;
+          font-weight: 700;
+          color: #ffffff;
+          margin-bottom: 0.75rem;
+        }
+
+        .card-footer {
+          font-size: 0.78rem;
+          color: #64748b;
+        }
+      }
+    }
+  }
+}

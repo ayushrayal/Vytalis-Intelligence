@@ -1,0 +1,11 @@
+.env
+node_modules
+*.md
+*.mdx
+
+.idea
+.vs
+.vscode
+.DS_Store
+Thumbs.db
+
