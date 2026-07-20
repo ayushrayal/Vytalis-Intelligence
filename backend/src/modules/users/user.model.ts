@@ -3,6 +3,13 @@ import { Schema, model, Document } from 'mongoose';
 export type SubscriptionPlan = 'starter' | 'growth' | 'agency';
 export type SubscriptionStatus = 'trialing' | 'active' | 'past_due' | 'canceled' | 'expired';
 
+export interface IMetaAdAccount {
+  id: string;
+  name: string;
+  currency: string;
+  accountStatus: number;
+}
+
 export interface IUser extends Document {
   googleId: string;
   email: string;
@@ -23,6 +30,20 @@ export interface IUser extends Document {
   connectedAccounts: {
     metaConnected: boolean;
     shopifyConnected: boolean;
+  };
+  meta?: {
+    connected: boolean;
+    encryptedAccessToken?: string;
+    userId?: string;
+    lastSyncedAt?: Date;
+    adAccounts?: IMetaAdAccount[];
+  };
+  shopify?: {
+    connected: boolean;
+    encryptedAccessToken?: string;
+    shopDomain?: string;
+    shopName?: string;
+    lastSyncedAt?: Date;
   };
   preferences: {
     theme: 'dark' | 'light';
@@ -108,6 +129,52 @@ const userSchema = new Schema<IUser>(
       shopifyConnected: {
         type: Boolean,
         default: false,
+      },
+    },
+    meta: {
+      connected: {
+        type: Boolean,
+        default: false,
+      },
+      encryptedAccessToken: {
+        type: String,
+        default: '',
+      },
+      userId: {
+        type: String,
+        default: '',
+      },
+      lastSyncedAt: {
+        type: Date,
+      },
+      adAccounts: [
+        {
+          id: String,
+          name: String,
+          currency: String,
+          accountStatus: Number,
+        },
+      ],
+    },
+    shopify: {
+      connected: {
+        type: Boolean,
+        default: false,
+      },
+      encryptedAccessToken: {
+        type: String,
+        default: '',
+      },
+      shopDomain: {
+        type: String,
+        default: '',
+      },
+      shopName: {
+        type: String,
+        default: '',
+      },
+      lastSyncedAt: {
+        type: Date,
       },
     },
     preferences: {

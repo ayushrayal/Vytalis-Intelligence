@@ -45,14 +45,17 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   }
 
   if (!isAuthenticated || !user) {
+    console.log('[ProtectedRoute] Unauthenticated | Redirecting to /login');
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
   if (requireOnboarded && !user.isOnboarded) {
+    console.log('[ProtectedRoute] User not onboarded (isOnboarded: false) | Redirecting from', location.pathname, 'to /welcome');
     return <Navigate to="/welcome" replace />;
   }
 
   if (!requireOnboarded && user.isOnboarded && location.pathname === '/welcome') {
+    console.log('[ProtectedRoute] User already onboarded (isOnboarded: true) | Redirecting from /welcome to /dashboard');
     return <Navigate to="/dashboard" replace />;
   }
 

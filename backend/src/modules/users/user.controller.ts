@@ -24,6 +24,22 @@ export const getMe = asyncHandler(async (req: Request, res: Response) => {
         lastActiveAt: user.lastActiveAt,
         subscription: user.subscription,
         connectedAccounts: user.connectedAccounts,
+        meta: user.meta
+          ? {
+              connected: user.meta.connected,
+              userId: user.meta.userId,
+              lastSyncedAt: user.meta.lastSyncedAt,
+              adAccounts: user.meta.adAccounts || [],
+            }
+          : { connected: false, adAccounts: [] },
+        shopify: user.shopify
+          ? {
+              connected: user.shopify.connected,
+              shopDomain: user.shopify.shopDomain,
+              shopName: user.shopify.shopName,
+              lastSyncedAt: user.shopify.lastSyncedAt,
+            }
+          : { connected: false, shopDomain: '' },
         preferences: user.preferences,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,

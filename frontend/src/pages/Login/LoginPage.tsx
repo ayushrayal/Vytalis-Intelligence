@@ -12,11 +12,9 @@ export const LoginPage: React.FC = () => {
 
   useEffect(() => {
     if (isAuthenticated && user) {
-      if (user.isOnboarded) {
-        navigate('/dashboard', { replace: true });
-      } else {
-        navigate('/welcome', { replace: true });
-      }
+      const target = user.isOnboarded ? '/dashboard' : '/welcome';
+      console.log('[LoginPage] Authenticated user | isOnboarded:', user.isOnboarded, '| Navigating to:', target);
+      navigate(target, { replace: true });
     }
   }, [isAuthenticated, user, navigate]);
 

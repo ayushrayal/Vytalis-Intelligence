@@ -21,6 +21,23 @@ export interface User {
     metaConnected: boolean;
     shopifyConnected: boolean;
   };
+  meta?: {
+    connected: boolean;
+    userId?: string;
+    lastSyncedAt?: string;
+    adAccounts?: Array<{
+      id: string;
+      name: string;
+      currency: string;
+      accountStatus: number;
+    }>;
+  };
+  shopify?: {
+    connected: boolean;
+    shopDomain?: string;
+    shopName?: string;
+    lastSyncedAt?: string;
+  };
   preferences: {
     theme: 'dark' | 'light';
     timezone: string;
@@ -50,6 +67,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     try {
       const response = await apiClient.get<{ success: boolean; data: { user: User } }>('/users/me');
       if (response.data?.data?.user) {
+        console.log('[AuthContext] Hydrated User:', response.data.data.user);
+        console.log('[AuthContext] isOnboarded:', response.data.data.user.isOnboarded);
         setUser(response.data.data.user);
         return true;
       }

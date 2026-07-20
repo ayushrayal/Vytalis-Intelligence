@@ -79,6 +79,52 @@ const userSchema = new mongoose_1.Schema({
             default: false,
         },
     },
+    meta: {
+        connected: {
+            type: Boolean,
+            default: false,
+        },
+        encryptedAccessToken: {
+            type: String,
+            default: '',
+        },
+        userId: {
+            type: String,
+            default: '',
+        },
+        lastSyncedAt: {
+            type: Date,
+        },
+        adAccounts: [
+            {
+                id: String,
+                name: String,
+                currency: String,
+                accountStatus: Number,
+            },
+        ],
+    },
+    shopify: {
+        connected: {
+            type: Boolean,
+            default: false,
+        },
+        encryptedAccessToken: {
+            type: String,
+            default: '',
+        },
+        shopDomain: {
+            type: String,
+            default: '',
+        },
+        shopName: {
+            type: String,
+            default: '',
+        },
+        lastSyncedAt: {
+            type: Date,
+        },
+    },
     preferences: {
         theme: {
             type: String,

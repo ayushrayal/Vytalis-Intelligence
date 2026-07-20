@@ -21,13 +21,14 @@ const envSchema = z.object({
   GOOGLE_CLIENT_SECRET: z.string().default('mock_google_client_secret'),
   GOOGLE_REDIRECT_URI: z.string().default('http://localhost:5000/api/v1/auth/google/callback'),
 
-  META_CLIENT_ID: z.string().default('mock_meta_client_id'),
-  META_CLIENT_SECRET: z.string().default('mock_meta_client_secret'),
-  META_REDIRECT_URI: z.string().default('http://localhost:5000/api/v1/integrations/meta/callback'),
+  META_APP_ID: z.string().default('mock_meta_app_id'),
+  META_APP_SECRET: z.string().default('mock_meta_app_secret'),
+  META_REDIRECT_URI: z.string().default('http://localhost:5000/api/v1/meta/callback'),
 
-  SHOPIFY_API_KEY: z.string().default('mock_shopify_api_key'),
-  SHOPIFY_API_SECRET: z.string().default('mock_shopify_api_secret'),
-  SHOPIFY_REDIRECT_URI: z.string().default('http://localhost:5000/api/v1/integrations/shopify/callback'),
+  SHOPIFY_CLIENT_ID: z.string().default('mock_shopify_client_id'),
+  SHOPIFY_CLIENT_SECRET: z.string().default('mock_shopify_client_secret'),
+  SHOPIFY_SCOPES: z.string().default('read_products,read_orders,read_customers'),
+  SHOPIFY_REDIRECT_URI: z.string().default('http://localhost:5000/api/v1/shopify/callback'),
 
   RAZORPAY_KEY_ID: z.string().default('rzp_test_mock'),
   RAZORPAY_KEY_SECRET: z.string().default('mock_razorpay_secret'),

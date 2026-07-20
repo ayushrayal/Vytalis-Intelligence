@@ -13,6 +13,8 @@ const error_middleware_1 = require("./middleware/error.middleware");
 const health_routes_1 = __importDefault(require("./modules/health/health.routes"));
 const auth_routes_1 = __importDefault(require("./modules/auth/auth.routes"));
 const user_routes_1 = __importDefault(require("./modules/users/user.routes"));
+const meta_routes_1 = __importDefault(require("./modules/integrations/meta/meta.routes"));
+const shopify_routes_1 = __importDefault(require("./modules/integrations/shopify/shopify.routes"));
 const app = (0, express_1.default)();
 // Security Middlewares
 app.use((0, helmet_1.default)({
@@ -33,6 +35,8 @@ app.use(cookie_middleware_1.cookieMiddleware);
 app.use('/api/v1', health_routes_1.default);
 app.use('/api/v1/auth', auth_routes_1.default);
 app.use('/api/v1/users', user_routes_1.default);
+app.use('/api/v1/meta', meta_routes_1.default);
+app.use('/api/v1/shopify', shopify_routes_1.default);
 // Global Error Handler
 app.use(error_middleware_1.errorMiddleware);
 exports.default = app;

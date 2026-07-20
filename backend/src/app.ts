@@ -8,21 +8,27 @@ import { errorMiddleware } from './middleware/error.middleware';
 import healthRoutes from './modules/health/health.routes';
 import authRoutes from './modules/auth/auth.routes';
 import userRoutes from './modules/users/user.routes';
+import metaRoutes from './modules/integrations/meta/meta.routes';
+import shopifyRoutes from './modules/integrations/shopify/shopify.routes';
 
 const app: Application = express();
 
 // Security Middlewares
-app.use(helmet({
-  contentSecurityPolicy: env.NODE_ENV === 'production',
-  crossOriginEmbedderPolicy: env.NODE_ENV === 'production',
-}));
+app.use(
+  helmet({
+    contentSecurityPolicy: env.NODE_ENV === 'production',
+    crossOriginEmbedderPolicy: env.NODE_ENV === 'production',
+  })
+);
 
-app.use(cors({
-  origin: env.FRONTEND_URL,
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-}));
+app.use(
+  cors({
+    origin: env.FRONTEND_URL,
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  })
+);
 
 app.use(globalRateLimiter);
 app.use(express.json({ limit: '1mb' }));
@@ -33,6 +39,8 @@ app.use(cookieMiddleware);
 app.use('/api/v1', healthRoutes);
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/users', userRoutes);
+app.use('/api/v1/meta', metaRoutes);
+app.use('/api/v1/shopify', shopifyRoutes);
 
 // Global Error Handler
 app.use(errorMiddleware);

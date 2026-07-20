@@ -27,8 +27,10 @@ export const googleCallback = asyncHandler(async (req: Request, res: Response) =
 
     const redirectPath = user.isOnboarded ? '/dashboard' : '/welcome';
 
-    console.log('FRONTEND_URL:', env.FRONTEND_URL);
-    console.log('Redirecting to:', `${env.FRONTEND_URL}${redirectPath}`);
+    console.log('[OAuth Callback] User Email:', user.email);
+    console.log('[OAuth Callback] isOnboarded:', user.isOnboarded);
+    console.log('[OAuth Callback] FRONTEND_URL:', env.FRONTEND_URL);
+    console.log('[OAuth Callback] Redirecting to:', `${env.FRONTEND_URL}${redirectPath}`);
 
     res.redirect(`${env.FRONTEND_URL}${redirectPath}`);
   } catch (err) {

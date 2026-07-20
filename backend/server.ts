@@ -9,6 +9,9 @@ import { connectRedis, disconnectRedis } from './src/config/redis.config';
 
 let server: http.Server;
 
+console.log("META_APP_ID:", env.META_APP_ID);
+console.log("META_REDIRECT_URI:", env.META_REDIRECT_URI);
+
 // Uncaught Exception Handler
 process.on('uncaughtException', (error: Error) => {
   logger.error('CRITICAL: Uncaught Exception detected', { error });
